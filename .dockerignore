@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun.lockb
+
+# Next.js Build Outputs
+.next/
+out/
+dist/
+build/
+
+# Environment Variables and Secrets
+.env
+.env*.local
+.env.development
+.env.test
+.env.production.local
+
+# Debugging and Log Files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Docker Configuration Files
+Dockerfile
+docker-compose.yml
+compose.yaml
+.dockerignore
+
+# Source Control and Editor Configuration
+.git
+.gitignore
+.gitattributes
+.hg
+.svn
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing and Coverage
+coverage/
+nyc_output/
+__tests__/
+__mocks__/
+
+# Documentation
+README.md
+*.md
+docs/

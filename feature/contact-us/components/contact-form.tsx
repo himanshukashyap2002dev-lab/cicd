@@ -1,5 +1,6 @@
 "use client";
 
+import { useBaseContext } from "@/components/context/use-base-context";
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
@@ -19,12 +20,12 @@ const initialFormData: FormData = {
   message: "",
 };
 
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "";
-
 export default function ContactForm() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const { appconfig } = useBaseContext();
+  const RECAPTCHA_SITE_KEY = appconfig.recaptchaSiteKey;
 
   const captchaRef = useRef<ReCAPTCHA>(null);
 
