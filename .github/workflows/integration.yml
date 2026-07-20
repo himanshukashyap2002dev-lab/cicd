@@ -1,0 +1,26 @@
+name: Integration
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+
+      - name: Installing Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
