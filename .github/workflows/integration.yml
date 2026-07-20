@@ -3,8 +3,6 @@ name: Integration
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -37,15 +35,33 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Determine next version
+        if: github.event_name == 'push'
+        id: version
+        run: |
+          LAST_TAG=$(aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --query 'imageDetails[].imageTags' \
+            --output text 2>/dev/null \
+            | tr '\t' '\n' \
+            | grep -E '^[0-9]+$' \
+            | sort -n \
+            | tail -1)
+
+          if [ -z "$LAST_TAG" ]; then
+            NEXT=1
+          else
+            NEXT=$((10#$LAST_TAG + 1))
+          fi
+
+          TAG=$(printf '%02d' "$NEXT")
+          echo "Next version tag: $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Login to Amazon ECR
         if: github.event_name == 'push'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Set version tag
-        if: github.event_name == 'push'
-        id: version
-        run: echo "tag=$(printf '%02d' ${{ github.run_number }})" >> "$GITHUB_OUTPUT"
 
       - name: Build, tag, and push image to ECR
         if: github.event_name == 'push'
@@ -54,6 +70,4 @@ jobs:
           IMAGE_TAG: ${{ steps.version.outputs.tag }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
