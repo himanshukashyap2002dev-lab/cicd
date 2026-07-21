@@ -5,5 +5,3 @@ export function returnSum(a: number, b: number) {
 export function hello() {
   return "hello";
 }
-
-export function tryToFail();
